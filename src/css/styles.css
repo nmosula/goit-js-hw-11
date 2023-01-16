@@ -23,10 +23,11 @@ body {
 
 .search-form input, .search-form button {
   padding: 10px;
+  cursor: pointer;
 }
 
 .search-form input {
-    width: 300px;
+  width: 300px;
 }
 
 .gallery {
@@ -45,4 +46,12 @@ body {
 .photo-card img {
   margin: 0 auto;
   width: 100%;
+}
+
+.load-more {
+  margin: 20px auto;
+  width: 300px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
 }
