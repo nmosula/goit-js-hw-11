@@ -1,8 +1,8 @@
 import "./css/styles.css";
-// import {fetchPhotos} from "./js/fetchPhotos.js";
 import Notiflix from 'notiflix';
 import axios from "axios";
-
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 const form = document.querySelector("#search-form");
 const gallery = document.querySelector(".gallery");
@@ -12,18 +12,19 @@ const inpQuery = document.querySelector("input[name='searchQuery']");
 let searchQuery = inpQuery.value.trim();
 
 let page = 1;
-const PER_PAGE = 5;
+const PER_PAGE = 40;
 
-btnLoadMore.hidden = true;
+btnLoadMore.style.visibility = "hidden";
 
 form.addEventListener('submit', onSubmitForm);
 btnLoadMore.addEventListener('click', onLoadMore);
+gallery.addEventListener('click', onImgClick);
 
 function onSubmitForm(evt) {
   evt.preventDefault();
 
   page = 1;
-  btnLoadMore.hidden = true;
+  btnLoadMore.style.visibility = "hidden";
   gallery.innerHTML = "";
 
   const frmElements = evt.currentTarget.elements;
@@ -48,11 +49,11 @@ async function getPhotos(searchQuery, page = 1) {
           }
 
           if (resp.data.totalHits > page * PER_PAGE) {
-            btnLoadMore.hidden = false;
+            btnLoadMore.style.visibility = "visible";
           }
           else {
             Notiflix.Notify.info(`We're sorry, but you've reached the end of search results.`);
-            btnLoadMore.hidden = true;
+            btnLoadMore.style.visibility = "hidden";
           }
 
           showPhotos(resp.data);
@@ -73,19 +74,21 @@ function showPhotos(data) {
       downloads: imgDownloads
   }) => `
       <div class="photo-card">
-        <img src="${imgSmall}" alt="${imgTags}" loading="lazy" />
+      <a class="photo-card__link" href="${imgLarge}">
+        <img class="photo-card__image" src="${imgSmall}" alt="${imgTags}" loading="lazy" />
+      </a>
         <div class="info">
           <p class="info-item">
-            <b>Likes</b>: ${imgLikes}
+            <b>Likes</b>${imgLikes}
           </p>
           <p class="info-item">
-            <b>Views</b>: ${imgViews}
+            <b>Views</b>${imgViews}
           </p>
           <p class="info-item">
-            <b>Comments</b>: ${imgComments}
+            <b>Comments</b>${imgComments}
           </p>
           <p class="info-item">
-            <b>Downloads</b>: ${imgDownloads}
+            <b>Downloads</b>${imgDownloads}
           </p>
         </div>
       </div>
@@ -98,4 +101,18 @@ function onLoadMore() {
   searchQuery = inpQuery.value.trim();
   page += 1;
   getPhotos(searchQuery, page);
+}
+
+function onImgClick(evt) {
+    evt.preventDefault();
+  
+    if (evt.target.nodeName !== 'IMG') {
+        return;
+    }
+
+    const lightbox = new SimpleLightbox('.gallery a', {
+        captionsData: 'alt',
+        captionDelay: 250,
+    });  
+
 }
